@@ -6,8 +6,7 @@ Display hidden text or HTML comments on geocache pages.
 
 Display hidden text or HTML comments. Great for help on puzzle caches.
 
-This script is a reworking of Chuck Denz's
-GCHiddenText. Chuck hasn't updated his script since 2011 and subsequent changes to the site have stopped it working. Since it was a popular and useful script, I have revived it so we can continue using it. All credit for the original should go to Chuck.
+This script is a reworking of Chuck Denz's GCHiddenText. Chuck hasn't updated his script since 2011 and subsequent changes to the site have stopped it working. Since it was a popular and useful script, I have revived it so we can continue using it. All credit for the original should go to Chuck.
 
 ## Chuck's original description:
 
@@ -20,6 +19,11 @@ I made a small edit part on the top of the code for user settings. You can adjus
 If you find any caches where the script fails, please provide the details and I'll endeavour to get it working.
 
 ## History
+
+### Version 3.1.0
+
+* Updated to work on the latest cache pages.
+* Created a GitHub repo to manage updates through GreasyFork.
 
 ### Version 3.0.0
 
