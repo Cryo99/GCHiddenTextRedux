@@ -1,4 +1,4 @@
-# GCHiddenTextRedux
+# GCHiddenText Redux
 
 Display hidden text or HTML comments on geocache pages.
 
