@@ -8,6 +8,12 @@
 
 
 /*----------------------History---------------------------------------------------
+/*----------------------V3.2.0---------------------------------------------------
+v3.2.0 22/11/20
+-Added the ability to detect elements with display:none.
+-Made searches more efficient.
+-Made searches check all types of elements, not just divs.
+
 /*----------------------V3.1.0---------------------------------------------------
 v3.1.0 27/7/19
 -Updated to work on the latest cache pages.
@@ -72,13 +78,12 @@ try {
 try {
 	htmllong = document.getElementById('ctl00_ContentBody_LongDescription').innerHTML;
 } catch (err) {}
-var html = htmlshort + htmllong,
-	CS,
+var CS,
 	i;
 
 /********Find Hidden Text*********/
 //Find Styles Colors
-var allStyles = document.evaluate('//*[@style]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+var allStyles = document.evaluate('//*[@style]', document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 for (i = 0; i < allStyles.snapshotLength; i++) {
 	CS = allStyles.snapshotItem(i).style.color.toLowerCase();
 	// Prevent the GeoKrety widget header being detected as hidden text.
@@ -94,7 +99,6 @@ for (i = 0; i < allStyles.snapshotLength; i++) {
 //Find Font Colors
 allStyles = document.evaluate('//*[@color]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 for (i = 0; i < allStyles.snapshotLength; i++) {
-	// CS = allStyles.snapshotItem(i).color.toLowerCase();
 	CS = allStyles.snapshotItem(i).getAttribute('color').toLowerCase();
 	if (CS == 'white' || CS == '#ffffff') {
 		found = true;
@@ -110,19 +114,28 @@ for (i = 0; i < allStyles.snapshotLength; i++) {
 
 /*********** Find Comments on Cache Description Page **********/
 if (htmlshort) {
-	var shortdesc = document.evaluate("//span[@id='ctl00_ContentBody_ShortDescription']//comment()", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	var shortdesc = document.evaluate("//span[@id='ctl00_ContentBody_ShortDescription']//comment()", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 	var cs_length = shortdesc.snapshotLength;
+	// 	Look for elements with style set to "visibility: hidden".
+	var shorthiddendesc = document.evaluate("//span[@id='ctl00_ContentBody_ShortDescription']//*[@style='visibility: hidden']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	var hs_length = shorthiddendesc.snapshotLength;
+	// 	Look for elements with style set to "display: none".
+	var shortnonedesc = document.evaluate(".//span[@id='ctl00_ContentBody_ShortDescription']//*[@style='display: none;']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	var ns_length = shortnonedesc.snapshotLength;
 }
 if (htmllong) {
-	var longdesc = document.evaluate("//span[@id='ctl00_ContentBody_LongDescription']//comment()", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	var longdesc = document.evaluate("//span[@id='ctl00_ContentBody_LongDescription']//comment()", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 	var cl_length = longdesc.snapshotLength;
+	// 	Look for elements with style set to "visibility: hidden".
+	var longhiddendesc = document.evaluate("//span[@id='ctl00_ContentBody_LongDescription']//*[@style='visibility: hidden']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	var hl_length = longhiddendesc.snapshotLength;
+	// 	Look for elements with style set to "display: none".
+	var longnonedesc = document.evaluate(".//span[@id='ctl00_ContentBody_LongDescription']//*[@style='display: none;']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	var nl_length = longnonedesc.snapshotLength;
 }
-// 	Look for divs with style set to "visibility: hidden".
-var hiddendesc = document.evaluate("//div[@style='visibility: hidden']", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-var hd_length = hiddendesc.snapshotLength;
 
 //Create Elements for Comments
-if (cs_length > 0 || cl_length > 0 || hd_length > 0) {
+if (cs_length > 0 || cl_length > 0 || hs_length > 0 || ns_length > 0 || hl_length > 0 || nl_length > 0) {
 	found = true;
 	for (i = 0; i < cs_length; i++) {
 		var scs = document.createElement('span');
@@ -143,14 +156,41 @@ if (cs_length > 0 || cl_length > 0 || hd_length > 0) {
 		longdesc.snapshotItem(i).parentNode.insertBefore(lcs, longdesc.snapshotItem(i).nextSibling);
 	}
 	// Hidden divs.
-	for (i = 0; i < hd_length; i++) {
-		var hcs = document.createElement('span');
-		hcs.className = 'txt_hidden';
-		hcs.style.color = fgcolor;
-		hcs.style.backgroundColor = bgcolor;
-		hcs.style.display = 'none';
-		hcs.textContent = hiddendesc.snapshotItem(i).innerHTML;
-		hiddendesc.snapshotItem(i).parentNode.insertBefore(hcs, hiddendesc.snapshotItem(i).nextSibling);
+	for (i = 0; i < hs_length; i++) {
+		var shcs = document.createElement('span');
+		shcs.className = 'txt_hidden';
+		shcs.style.color = fgcolor;
+		shcs.style.backgroundColor = bgcolor;
+		shcs.style.display = 'none';
+		shcs.textContent = shorthiddendesc.snapshotItem(i).innerHTML;
+		shorthiddendesc.snapshotItem(i).parentNode.insertBefore(shcs, shorthiddendesc.snapshotItem(i).nextSibling);
+	}
+	for (i = 0; i < hl_length; i++) {
+		var lhcs = document.createElement('span');
+		lhcs.className = 'txt_hidden';
+		lhcs.style.color = fgcolor;
+		lhcs.style.backgroundColor = bgcolor;
+		lhcs.style.display = 'none';
+		lhcs.textContent = longhiddendesc.snapshotItem(i).innerHTML;
+		longhiddendesc.snapshotItem(i).parentNode.insertBefore(lhcs, longhiddendesc.snapshotItem(i).nextSibling);
+	}
+	for (i = 0; i < ns_length; i++) {
+		var sncs = document.createElement('span');
+		sncs.className = 'txt_hidden';
+		sncs.style.color = fgcolor;
+		sncs.style.backgroundColor = bgcolor;
+		sncs.style.display = 'none';
+		sncs.textContent = shortnonedesc.snapshotItem(i).innerHTML;
+		shortnonedesc.snapshotItem(i).parentNode.insertBefore(sncs, shortnonedesc.snapshotItem(i).nextSibling);
+	}
+	for (i = 0; i < nl_length; i++) {
+		var lncs = document.createElement('span');
+		lncs.className = 'txt_hidden';
+		lncs.style.color = fgcolor;
+		lncs.style.backgroundColor = bgcolor;
+		lncs.style.display = 'none';
+		lncs.textContent = longnonedesc.snapshotItem(i).innerHTML;
+		longnonedesc.snapshotItem(i).parentNode.insertBefore(lncs, longnonedesc.snapshotItem(i).nextSibling);
 	}
 }
 

@@ -20,6 +20,12 @@ If you find any caches where the script fails, please provide the details and I'
 
 ## History
 
+### Version 3.2.0
+
+* Added the ability to detect elements with display:none.
+* Made searches more efficient.
+* Made searches check all types of elements, not just divs.
+
 ### Version 3.1.0
 
 * Updated to work on the latest cache pages.
