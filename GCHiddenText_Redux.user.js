@@ -3,7 +3,7 @@
 // @namespace   	http://userscripts.org/users/201960
 // @description 	Display "hidden text" or "HTML Comments".
 // @include	    	*.geocaching.com/geocache/*
-// @version     	3.1.0
+// @version     	3.2.0
 // ==/UserScript==
 
 
